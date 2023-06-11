@@ -19,7 +19,7 @@ jobs:
       - list-changed-modules
     strategy:
       matrix:
-        module: [a, b, c]
+        module: ${{ fromJSON(needs.list-changed-modules.outputs.changed-modules) }}
     steps:
       - name: build-changed-modules
         run: |
