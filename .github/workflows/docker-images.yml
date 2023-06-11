@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: list-changed-modules
         run: |
-          echo "json=${{ toJSON([a, b, c]) }}" >> $GITHUB_OUTPUT
+          echo "json=${{ toJSON('[a, b, c]') }}" >> $GITHUB_OUTPUT
   build-changed-modules:
     runs-on: [Linux, X64]
     needs:
