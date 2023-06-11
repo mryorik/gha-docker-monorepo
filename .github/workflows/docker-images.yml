@@ -1,0 +1,26 @@
+name: Docker images
+on:
+  push:
+    branches-ignore:
+    - master
+
+jobs:
+  list-changed-modules:
+    runs-on: [Linux, X64]
+    outputs:
+      changed-modules: ${{ steps.list-changed-modules.outputs.json }}
+    steps:
+      - name: list-changed-modules
+        run: |
+          echo "json=${{ toJSON([a, b, c]) }}" >> $GITHUB_OUTPUT
+  build-changed-modules:
+    runs-on: [Linux, X64]
+    needs:
+      - list-changed-modules
+    strategy:
+      matrix:
+        module: [a, b, c]
+    steps:
+      - name: build-changed-modules
+        run: |
+          echo ${{ matrix.module }}
