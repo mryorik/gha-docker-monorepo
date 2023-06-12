@@ -8,18 +8,29 @@ jobs:
   list-changed-modules:
     runs-on: [ubuntu-latest]
     outputs:
-      changed-modules: ${{ steps.list-changed-modules.outputs.json }}
+      json: ${{ steps.list.outputs.json }}
+      text: ${{ steps.list.outputs.text }}
     steps:
-      - name: list-changed-modules
+      - name: list
+        id: list
         run: |
-          echo "json=${{ toJSON('["a", "b", "c"]') }}" >> $GITHUB_OUTPUT
-  build-changed-modules:
+          echo 'json=["a", "b", "c"]' >> $GITHUB_OUTPUT
+  echo:
     runs-on: [ubuntu-latest]
     needs:
       - list-changed-modules
+    steps:
+      - name: echo
+        run: |
+          echo 'json=${{ fromJSON(needs.list-changed-modules.outputs.json) }}'
+  build-changed-modules:
+    runs-on: [ubuntu-latest]
+    needs:
+      - echo
+      - list-changed-modules
     strategy:
       matrix:
-        module: ${{ fromJSON(needs.list-changed-modules.outputs.changed-modules) }}
+        module: ${{ fromJSON(needs.list-changed-modules.outputs.json) }}
     steps:
       - name: build-changed-modules
         run: |
