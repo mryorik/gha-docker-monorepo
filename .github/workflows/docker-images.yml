@@ -32,6 +32,6 @@ jobs:
       matrix:
         module: ${{ fromJSON(needs.list-changed-modules.outputs.json) }}
     steps:
-      - name: build-changed-modules
+      - name: ${{ matrix.module }}
         run: |
           echo ${{ matrix.module }}
