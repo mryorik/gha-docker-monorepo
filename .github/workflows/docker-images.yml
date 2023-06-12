@@ -23,7 +23,7 @@ jobs:
       - name: echo
         run: |
           echo 'json=${{ fromJSON(needs.list-changed-modules.outputs.json) }}'
-  build-changed-modules:
+  build-image:
     runs-on: [ubuntu-latest]
     needs:
       - echo
@@ -32,6 +32,6 @@ jobs:
       matrix:
         module: ${{ fromJSON(needs.list-changed-modules.outputs.json) }}
     steps:
-      - name: ${{ matrix.module }}
+      - name: Build docker image
         run: |
           echo ${{ matrix.module }}
