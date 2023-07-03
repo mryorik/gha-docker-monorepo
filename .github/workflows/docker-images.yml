@@ -19,7 +19,8 @@ jobs:
 
       - name: base commit
         id: base_commit
-        run:
+        run: |
+            git pull origin main
             echo "sha=$(git merge-base ${{ github.ref_name }} main)" >> $GITHUB_OUTPUT
 
       - name: changed dirs
