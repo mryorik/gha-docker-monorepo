@@ -10,19 +10,37 @@ jobs:
     outputs:
       json: ${{ steps.list.outputs.json }}
       text: ${{ steps.list.outputs.text }}
+      all_changed_and_modified_files: ${{ steps.changed_dirs.outputs.all_changed_and_modified_files }}
     steps:
-      - name: list
-        id: list
-        run: |
-          echo 'json=["a", "b", "c"]' >> $GITHUB_OUTPUT
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: base commit
+        id: base_commit
+        run:
+            echo "sha=$(git merge-base ${{ github.ref_name }} main)" >> $GITHUB_OUTPUT
+
+      - name: changed dirs
+        id: changed_dirs
+        uses: tj-actions/changed-files@v35
+        with:
+          base_sha: ${{ steps.base_commit.outputs.sha }}
+          diff_relative: true
+          dir_names: true
+          dir_names_max_depth: 1
+          json: true
+          json_raw_format: true
+          path: apps
   echo:
     runs-on: [ubuntu-latest]
     needs:
       - list-changed-modules
     steps:
-      - name: echo
+      - name: echo changed dirs
         run: |
-          echo 'json=${{ fromJSON(needs.list-changed-modules.outputs.json) }}'
+          echo '${{ needs.list-changed-modules.outputs.all_changed_and_modified_files }}'
   build-image:
     runs-on: [ubuntu-latest]
     needs:
@@ -30,7 +48,7 @@ jobs:
       - list-changed-modules
     strategy:
       matrix:
-        module: ${{ fromJSON(needs.list-changed-modules.outputs.json) }}
+        module: ${{ fromJSON(needs.list-changed-modules.outputs.all_changed_and_modified_files) }}
     steps:
       - name: Build docker image
         run: |
