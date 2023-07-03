@@ -9,7 +9,6 @@ jobs:
     runs-on: [ubuntu-latest]
     outputs:
       all_changed_and_modified_files: ${{ steps.changed_dirs.outputs.all_changed_and_modified_files }}
-      any_changed: ${{ steps.changed_dirs.outputs.any_changed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -45,7 +44,7 @@ jobs:
     needs:
       - echo
       - list-changed-modules
-    if: ${{ needs.list-changed-modules.outputs.any_changed == 'true' }}
+    if: ${{ needs.list-changed-modules.outputs.all_changed_and_modified_files != '[]' }}
     strategy:
       matrix:
         module: ${{ fromJSON(needs.list-changed-modules.outputs.all_changed_and_modified_files) }}
